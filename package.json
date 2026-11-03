@@ -1,0 +1,25 @@
+{
+  "name": "cloudpulse",
+  "version": "1.0.0",
+  "description": "Minimal AWS serverless health-check API using Lambda Function URLs",
+  "type": "module",
+  "main": "src/app.js",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node --test tests/**/*.test.js",
+    "start": "node src/local.js"
+  },
+  "keywords": [
+    "aws",
+    "lambda",
+    "sam",
+    "serverless",
+    "devops",
+    "health-check"
+  ],
+  "author": "",
+  "license": "MIT",
+  "private": true
+}

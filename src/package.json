@@ -1,0 +1,7 @@
+{
+  "name": "cloudpulse-lambda",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Lambda deployment package root (enables ES modules)"
+}

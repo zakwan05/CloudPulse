@@ -1,0 +1,58 @@
+# EXAMPLE ONLY — rename to deploy.yml after configuring the IAM OIDC role.
+# See docs/oidc-cd-upgrade.md. Never commit static AWS access keys.
+
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy:
+    name: SAM deploy via OIDC
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Run tests
+        run: npm test
+
+      - name: Set up AWS SAM CLI
+        uses: aws-actions/setup-sam@v2
+        with:
+          use-installer: true
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Validate template
+        run: sam validate
+
+      - name: Build
+        run: sam build
+
+      - name: Deploy
+        run: >
+          sam deploy
+          --stack-name cloudpulse-demo
+          --capabilities CAPABILITY_IAM
+          --no-confirm-changeset
+          --no-fail-on-empty-changeset
+          --resolve-s3
+          --parameter-overrides DeploymentVersion=${{ github.sha }}

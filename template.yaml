@@ -1,0 +1,65 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: CloudPulse — minimal serverless health-check API (Lambda Function URL)
+
+Parameters:
+  DeploymentVersion:
+    Type: String
+    Default: "1.0.0"
+    Description: Value exposed as version in GET /health responses
+
+Globals:
+  Function:
+    Runtime: nodejs22.x
+    Timeout: 5
+    MemorySize: 128
+    Architectures:
+      - x86_64
+
+Resources:
+  HealthFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: /aws/lambda/cloudpulse-health
+      RetentionInDays: 3
+
+  HealthFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: cloudpulse-health
+      Description: CloudPulse public read-only health endpoint
+      CodeUri: src/
+      Handler: app.handler
+      # ReservedConcurrentExecutions omitted on purpose:
+      # new AWS accounts often have a concurrency quota of 10, and AWS requires
+      # at least 10 unreserved. Reserving even 2 then fails deploy. After a
+      # Service Quotas increase, you can add e.g. ReservedConcurrentExecutions: 2
+      Environment:
+        Variables:
+          DEPLOYMENT_VERSION: !Ref DeploymentVersion
+      LoggingConfig:
+        LogGroup: !Ref HealthFunctionLogGroup
+      FunctionUrlConfig:
+        AuthType: NONE
+        InvokeMode: BUFFERED
+        Cors:
+          AllowOrigins:
+            - "*"
+          AllowMethods:
+            - GET
+          MaxAge: 300
+
+Outputs:
+  HealthFunctionArn:
+    Description: ARN of the CloudPulse Lambda function
+    Value: !GetAtt HealthFunction.Arn
+
+  HealthFunctionUrl:
+    Description: Public Function URL for CloudPulse (read-only demo — anyone can invoke; may incur usage costs)
+    Value: !GetAtt HealthFunctionUrl.FunctionUrl
+
+  HealthCheckEndpoint:
+    Description: Ready-to-call GET /health URL
+    Value: !Sub
+      - "${Url}health"
+      - Url: !GetAtt HealthFunctionUrl.FunctionUrl

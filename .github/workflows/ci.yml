@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    name: Test and SAM build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      # No npm dependencies today; tests use Node's built-in test runner only.
+      - name: Run automated tests
+        run: npm test
+
+      - name: Set up AWS SAM CLI
+        uses: aws-actions/setup-sam@v2
+        with:
+          use-installer: true
+
+      # No AWS credentials required for validate/build of this project.
+      - name: Validate SAM template
+        run: sam validate
+
+      - name: Build SAM application
+        run: sam build

@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+
+# SAM / CloudFormation build artifacts
+.aws-sam/
+samconfig.toml
+
+# Environment / local secrets (never commit credentials)
+.env
+.env.*
+!.env.example
+*.pem
+credentials
+aws-exports.js
+
+# Logs and OS noise
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Coverage / test output
+coverage/
+.nyc_output/
+
+# Temporary
+tmp/
+temp/
+*.tmp
