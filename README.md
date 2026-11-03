@@ -255,12 +255,6 @@ Exact pricing depends on region and usage; check the current [AWS Lambda pricing
 
 ---
 
-## 30-second interview explanation
-
-> “CloudPulse is a tiny production-shaped health API on AWS Lambda. I used a Function URL instead of API Gateway to keep cost and moving parts low. The SAM template uses three-day log retention and a small memory setting so a public demo stays cheap. CI runs unit tests and `sam build` with no AWS credentials; deploy is a deliberate local `sam deploy --guided`, with an optional OIDC GitHub deploy path documented so we never put static access keys in the repo.”
-
----
-
 ## License
 
 MIT — use freely for learning and portfolio demos.
